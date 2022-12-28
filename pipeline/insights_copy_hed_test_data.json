@@ -1,0 +1,568 @@
+{
+	"name": "insights_copy_hed_test_data",
+	"properties": {
+		"description": "Copy higher ed test data",
+		"activities": [
+			{
+				"name": "Set currentDateTime",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "currentDateTime",
+					"value": {
+						"value": "@{formatDateTime(convertTimeZone(utcnow(), 'UTC', pipeline().parameters.timezone), 'yyyy-MM-ddTHHmm_ss')}",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "get data for each endpoint in set 1",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Set currentDateTime",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Set currentDate",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@pipeline().parameters.endpointsSet1",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "ingest from url_set1",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "BinarySource",
+									"storeSettings": {
+										"type": "HttpReadSettings",
+										"requestMethod": "GET"
+									},
+									"formatSettings": {
+										"type": "BinaryReadSettings"
+									}
+								},
+								"sink": {
+									"type": "BinarySink",
+									"storeSettings": {
+										"type": "AzureBlobFSWriteSettings"
+									}
+								},
+								"enableStaging": false
+							},
+							"inputs": [
+								{
+									"referenceName": "DS_HTTP_binary3",
+									"type": "DatasetReference",
+									"parameters": {
+										"URL": {
+											"value": "@item().URL",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "DS_ADLS_binary_file4",
+									"type": "DatasetReference",
+									"parameters": {
+										"filesystem": {
+											"value": "@pipeline().parameters.sinkFilesystem",
+											"type": "Expression"
+										},
+										"filename": {
+											"value": "@{item().sinkDirectory}/@{variables('currentDateTime')}/@{item().sinkFilename}",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"name": "get data for each endpoint in set 2",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "get data for each endpoint in set 1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@pipeline().parameters.endpointsSet2",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "ingest from url_set2",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "BinarySource",
+									"storeSettings": {
+										"type": "HttpReadSettings",
+										"requestMethod": "GET"
+									},
+									"formatSettings": {
+										"type": "BinaryReadSettings"
+									}
+								},
+								"sink": {
+									"type": "BinarySink",
+									"storeSettings": {
+										"type": "AzureBlobFSWriteSettings"
+									}
+								},
+								"enableStaging": false
+							},
+							"inputs": [
+								{
+									"referenceName": "DS_HTTP_binary3",
+									"type": "DatasetReference",
+									"parameters": {
+										"URL": {
+											"value": "@item().URL",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "DS_ADLS_binary_file4",
+									"type": "DatasetReference",
+									"parameters": {
+										"filesystem": {
+											"value": "@pipeline().parameters.sinkFilesystem",
+											"type": "Expression"
+										},
+										"filename": {
+											"value": "@{item().sinkDirectory}/@{item().sinkFilename}",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"name": "get data for each endpoint in set 3",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "get data for each endpoint in set 2",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@pipeline().parameters.endpointsSet3",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "ingest from url_set3",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "BinarySource",
+									"storeSettings": {
+										"type": "HttpReadSettings",
+										"requestMethod": "GET"
+									},
+									"formatSettings": {
+										"type": "BinaryReadSettings"
+									}
+								},
+								"sink": {
+									"type": "BinarySink",
+									"storeSettings": {
+										"type": "AzureBlobFSWriteSettings"
+									}
+								},
+								"enableStaging": false
+							},
+							"inputs": [
+								{
+									"referenceName": "DS_HTTP_binary3",
+									"type": "DatasetReference",
+									"parameters": {
+										"URL": {
+											"value": "@item().URL",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "DS_ADLS_binary_file4",
+									"type": "DatasetReference",
+									"parameters": {
+										"filesystem": {
+											"value": "@pipeline().parameters.sinkFilesystem",
+											"type": "Expression"
+										},
+										"filename": {
+											"value": "@{item().sinkDirectory}/@{variables('currentDateTime')}/@{item().sinkFilename}",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"name": "get data for each endpoint in set 4",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "get data for each endpoint in set 3",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@pipeline().parameters.endpointsSet4",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "ingest from url_set4",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "BinarySource",
+									"storeSettings": {
+										"type": "HttpReadSettings",
+										"requestMethod": "GET"
+									},
+									"formatSettings": {
+										"type": "BinaryReadSettings"
+									}
+								},
+								"sink": {
+									"type": "BinarySink",
+									"storeSettings": {
+										"type": "AzureBlobFSWriteSettings"
+									}
+								},
+								"enableStaging": false
+							},
+							"inputs": [
+								{
+									"referenceName": "DS_HTTP_binary3",
+									"type": "DatasetReference",
+									"parameters": {
+										"URL": {
+											"value": "@item().URL",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "DS_ADLS_binary_file4",
+									"type": "DatasetReference",
+									"parameters": {
+										"filesystem": {
+											"value": "@pipeline().parameters.sinkFilesystem",
+											"type": "Expression"
+										},
+										"filename": {
+											"value": "@{item().sinkDirectory}/@{variables('currentDate')}/@{item().sinkFilename}",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"name": "Set currentDate",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "currentDate",
+					"value": {
+						"value": "@{formatDateTime(convertTimeZone(utcnow(), 'UTC', pipeline().parameters.timezone), 'yyyy-MM-dd')}",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"parameters": {
+			"endpointsSet1": {
+				"type": "array",
+				"defaultValue": [
+					{
+						"URL": "https://raw.githubusercontent.com/microsoft/OpenEduAnalytics/main/modules/module_catalog/Microsoft_Education_Insights/test_data/hed_test_data/roster/2022-01-28T06-16-22/AadGroup/aadgroup.csv",
+						"sinkDirectory": "M365/roster",
+						"sinkFilename": "AadGroup/AadGroup_hed_test_data.csv"
+					},
+					{
+						"URL": "https://raw.githubusercontent.com/microsoft/OpenEduAnalytics/main/modules/module_catalog/Microsoft_Education_Insights/test_data/hed_test_data/roster/2022-01-28T06-16-22/AadGroupMembership/aadgroupmembership.csv",
+						"sinkDirectory": "M365/roster",
+						"sinkFilename": "AadGroupMembership/AadGroupMembership_hed_test_data.csv"
+					},
+					{
+						"URL": "https://raw.githubusercontent.com/microsoft/OpenEduAnalytics/main/modules/module_catalog/Microsoft_Education_Insights/test_data/hed_test_data/roster/2022-01-28T06-16-22/AadUser/aaduser.csv",
+						"sinkDirectory": "M365/roster",
+						"sinkFilename": "AadUser/AadUser_hed_test_data.csv"
+					},
+					{
+						"URL": "https://raw.githubusercontent.com/microsoft/OpenEduAnalytics/main/modules/module_catalog/Microsoft_Education_Insights/test_data/hed_test_data/roster/2022-01-28T06-16-22/AadUserPersonMapping/aaduserpersonmapping.csv",
+						"sinkDirectory": "M365/roster",
+						"sinkFilename": "AadUserPersonMapping/AadUserPersonMapping_hed_test_data.csv"
+					},
+					{
+						"URL": "https://raw.githubusercontent.com/microsoft/OpenEduAnalytics/main/modules/module_catalog/Microsoft_Education_Insights/test_data/hed_test_data/roster/2022-01-28T06-16-22/Course/course.csv",
+						"sinkDirectory": "M365/roster",
+						"sinkFilename": "Course/Course_hed_test_data.csv"
+					},
+					{
+						"URL": "https://raw.githubusercontent.com/microsoft/OpenEduAnalytics/main/modules/module_catalog/Microsoft_Education_Insights/test_data/hed_test_data/roster/2022-01-28T06-16-22/CourseGradeLevel/coursegradelevel.csv",
+						"sinkDirectory": "M365/roster",
+						"sinkFilename": "CourseGradeLevel/CourseGradeLevel_hed_test_data.csv"
+					},
+					{
+						"URL": "https://raw.githubusercontent.com/microsoft/OpenEduAnalytics/main/modules/module_catalog/Microsoft_Education_Insights/test_data/hed_test_data/roster/2022-01-28T06-16-22/CourseSubject/coursesubject.csv",
+						"sinkDirectory": "M365/roster",
+						"sinkFilename": "CourseSubject/CourseSubject_hed_test_data.csv"
+					},
+					{
+						"URL": "https://raw.githubusercontent.com/microsoft/OpenEduAnalytics/main/modules/module_catalog/Microsoft_Education_Insights/test_data/hed_test_data/roster/2022-01-28T06-16-22/Enrollment/enrollment.csv",
+						"sinkDirectory": "M365/roster",
+						"sinkFilename": "Enrollment/Enrollment_hed_test_data.csv"
+					},
+					{
+						"URL": "https://raw.githubusercontent.com/microsoft/OpenEduAnalytics/main/modules/module_catalog/Microsoft_Education_Insights/test_data/hed_test_data/roster/2022-01-28T06-16-22/Organization/organization.csv",
+						"sinkDirectory": "M365/roster",
+						"sinkFilename": "Organization/Organization_hed_test_data.csv"
+					},
+					{
+						"URL": "https://raw.githubusercontent.com/microsoft/OpenEduAnalytics/main/modules/module_catalog/Microsoft_Education_Insights/test_data/hed_test_data/roster/2022-01-28T06-16-22/Person/person.csv",
+						"sinkDirectory": "M365/roster",
+						"sinkFilename": "Person/Person_hed_test_data.csv"
+					},
+					{
+						"URL": "https://raw.githubusercontent.com/microsoft/OpenEduAnalytics/main/modules/module_catalog/Microsoft_Education_Insights/test_data/hed_test_data/roster/2022-01-28T06-16-22/PersonDemographic/persondemographic.csv",
+						"sinkDirectory": "M365/roster",
+						"sinkFilename": "PersonDemographic/PersonDemographic_hed_test_data.csv"
+					},
+					{
+						"URL": "https://raw.githubusercontent.com/microsoft/OpenEduAnalytics/main/modules/module_catalog/Microsoft_Education_Insights/test_data/hed_test_data/roster/2022-01-28T06-16-22/PersonDemographicEthnicity/persondemographicethnicity.csv",
+						"sinkDirectory": "M365/roster",
+						"sinkFilename": "PersonDemographicEthnicity/PersonDemographicEthnicity_hed_test_data.csv"
+					},
+					{
+						"URL": "https://raw.githubusercontent.com/microsoft/OpenEduAnalytics/main/modules/module_catalog/Microsoft_Education_Insights/test_data/hed_test_data/roster/2022-01-28T06-16-22/PersonDemographicPersonFlag/persondemographicpersonflag.csv",
+						"sinkDirectory": "M365/roster",
+						"sinkFilename": "PersonDemographicPersonFlag/PersonDemographicPersonFlag_hed_test_data.csv"
+					},
+					{
+						"URL": "https://raw.githubusercontent.com/microsoft/OpenEduAnalytics/main/modules/module_catalog/Microsoft_Education_Insights/test_data/hed_test_data/roster/2022-01-28T06-16-22/PersonDemographicRace/persondemographicrace.csv",
+						"sinkDirectory": "M365/roster",
+						"sinkFilename": "PersonDemographicRace/PersonDemographicRace_hed_test_data.csv"
+					},
+					{
+						"URL": "https://raw.githubusercontent.com/microsoft/OpenEduAnalytics/main/modules/module_catalog/Microsoft_Education_Insights/test_data/hed_test_data/roster/2022-01-28T06-16-22/PersonEmailAddress/personemailaddress.csv",
+						"sinkDirectory": "M365/roster",
+						"sinkFilename": "PersonEmailAddress/PersonEmailAddress_hed_test_data.csv"
+					},
+					{
+						"URL": "https://raw.githubusercontent.com/microsoft/OpenEduAnalytics/main/modules/module_catalog/Microsoft_Education_Insights/test_data/hed_test_data/roster/2022-01-28T06-16-22/PersonIdentifier/personidentifier.csv",
+						"sinkDirectory": "M365/roster",
+						"sinkFilename": "PersonIdentifier/PersonIdentifier_hed_test_data.csv"
+					},
+					{
+						"URL": "https://raw.githubusercontent.com/microsoft/OpenEduAnalytics/main/modules/module_catalog/Microsoft_Education_Insights/test_data/hed_test_data/roster/2022-01-28T06-16-22/PersonOrganizationRole/personorganizationrole.csv",
+						"sinkDirectory": "M365/roster",
+						"sinkFilename": "PersonOrganizationRole/PersonOrganizationRole_hed_test_data.csv"
+					},
+					{
+						"URL": "https://raw.githubusercontent.com/microsoft/OpenEduAnalytics/main/modules/module_catalog/Microsoft_Education_Insights/test_data/hed_test_data/roster/2022-01-28T06-16-22/PersonPhoneNumber/personphonenumber.csv",
+						"sinkDirectory": "M365/roster",
+						"sinkFilename": "PersonPhoneNumber/PersonPhoneNumber_hed_test_data.csv"
+					},
+					{
+						"URL": "https://raw.githubusercontent.com/microsoft/OpenEduAnalytics/main/modules/module_catalog/Microsoft_Education_Insights/test_data/hed_test_data/roster/2022-01-28T06-16-22/PersonRelationship/personrelationship.csv",
+						"sinkDirectory": "M365/roster",
+						"sinkFilename": "PersonRelationship/PersonRelationship_hed_test_data.csv"
+					},
+					{
+						"URL": "https://raw.githubusercontent.com/microsoft/OpenEduAnalytics/main/modules/module_catalog/Microsoft_Education_Insights/test_data/hed_test_data/roster/2022-01-28T06-16-22/RefDefinition/refdefinition.csv",
+						"sinkDirectory": "M365/roster",
+						"sinkFilename": "RefDefinition/RefDefinition_hed_test_data.csv"
+					},
+					{
+						"URL": "https://raw.githubusercontent.com/microsoft/OpenEduAnalytics/main/modules/module_catalog/Microsoft_Education_Insights/test_data/hed_test_data/roster/2022-01-28T06-16-22/RefTranslation/reftranslation.csv",
+						"sinkDirectory": "M365/roster",
+						"sinkFilename": "RefTranslation/RefTranslation_hed_test_data.csv"
+					},
+					{
+						"URL": "https://raw.githubusercontent.com/microsoft/OpenEduAnalytics/main/modules/module_catalog/Microsoft_Education_Insights/test_data/hed_test_data/roster/2022-01-28T06-16-22/Section/section.csv",
+						"sinkDirectory": "M365/roster",
+						"sinkFilename": "Section/Section_hed_test_data.csv"
+					},
+					{
+						"URL": "https://raw.githubusercontent.com/microsoft/OpenEduAnalytics/main/modules/module_catalog/Microsoft_Education_Insights/test_data/hed_test_data/roster/2022-01-28T06-16-22/SectionGradeLevel/sectiongradelevel.csv",
+						"sinkDirectory": "M365/roster",
+						"sinkFilename": "SectionGradeLevel/SectionGradeLevel_hed_test_data.csv"
+					},
+					{
+						"URL": "https://raw.githubusercontent.com/microsoft/OpenEduAnalytics/main/modules/module_catalog/Microsoft_Education_Insights/test_data/hed_test_data/roster/2022-01-28T06-16-22/SectionSession/sectionsession.csv",
+						"sinkDirectory": "M365/roster",
+						"sinkFilename": "SectionSession/SectionSession_hed_test_data.csv"
+					},
+					{
+						"URL": "https://raw.githubusercontent.com/microsoft/OpenEduAnalytics/main/modules/module_catalog/Microsoft_Education_Insights/test_data/hed_test_data/roster/2022-01-28T06-16-22/SectionSubject/sectionsubject.csv",
+						"sinkDirectory": "M365/roster",
+						"sinkFilename": "SectionSubject/SectionSubject_hed_test_data.csv"
+					},
+					{
+						"URL": "https://raw.githubusercontent.com/microsoft/OpenEduAnalytics/main/modules/module_catalog/Microsoft_Education_Insights/test_data/hed_test_data/roster/2022-01-28T06-16-22/Session/session.csv",
+						"sinkDirectory": "M365/roster",
+						"sinkFilename": "Session/Session_hed_test_data.csv"
+					},
+					{
+						"URL": "https://raw.githubusercontent.com/microsoft/OpenEduAnalytics/main/modules/module_catalog/Microsoft_Education_Insights/test_data/hed_test_data/roster/2022-01-28T06-16-22/SourceSystem/sourcesystem.csv",
+						"sinkDirectory": "M365/roster",
+						"sinkFilename": "SourceSystem/SourceSystem_hed_test_data.csv"
+					}
+				]
+			},
+			"endpointsSet2": {
+				"type": "array",
+				"defaultValue": [
+					{
+						"URL": "https://raw.githubusercontent.com/microsoft/OpenEduAnalytics/main/modules/module_catalog/Microsoft_Education_Insights/test_data/hed_test_data/schema/activity.v0.1.0.cdm.json",
+						"sinkDirectory": "M365/schema",
+						"sinkFilename": "activity.v0.1.0.cdm.json"
+					},
+					{
+						"URL": "https://raw.githubusercontent.com/microsoft/OpenEduAnalytics/main/modules/module_catalog/Microsoft_Education_Insights/test_data/hed_test_data/schema/roster.v0.3.2.cdm.json",
+						"sinkDirectory": "M365/schema",
+						"sinkFilename": "roster.v0.3.2.cdm.json"
+					},
+					{
+						"URL": "https://raw.githubusercontent.com/microsoft/OpenEduAnalytics/main/modules/module_catalog/Microsoft_Education_Insights/test_data/hed_test_data/current.manifest.cdm.json",
+						"sinkDirectory": "M365",
+						"sinkFilename": "current.manifest.cdm.json"
+					}
+				]
+			},
+			"endpointsSet3": {
+				"type": "array",
+				"defaultValue": [
+					{
+						"URL": "https://raw.githubusercontent.com/microsoft/OpenEduAnalytics/main/modules/module_catalog/Microsoft_Education_Insights/test_data/hed_test_data/roster/2022-01-28T06-16-22/snapshot.roster.manifest.cdm.json",
+						"sinkDirectory": "M365/roster",
+						"sinkFilename": "snapshot.roster.manifest.cdm.json"
+					}
+				]
+			},
+			"endpointsSet4": {
+				"type": "array",
+				"defaultValue": [
+					{
+						"URL": "https://raw.githubusercontent.com/microsoft/OpenEduAnalytics/main/modules/module_catalog/Microsoft_Education_Insights/test_data/hed_test_data/activity/2022-01-28/ApplicationUsage.csv",
+						"sinkDirectory": "M365/activity",
+						"sinkFilename": "ApplicationUsage_hed_test_data.csv"
+					}
+				]
+			},
+			"sinkFilesystem": {
+				"type": "string",
+				"defaultValue": "stage1np"
+			},
+			"timezone": {
+				"type": "string",
+				"defaultValue": "Central Standard Time"
+			}
+		},
+		"variables": {
+			"currentDateTime": {
+				"type": "String"
+			},
+			"currentDate": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "Insights Module/Extracts"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-12-07T16:39:52Z"
+	},
+	"type": "Microsoft.Synapse/workspaces/pipelines"
+}

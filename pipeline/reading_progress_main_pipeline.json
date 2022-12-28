@@ -1,0 +1,69 @@
+{
+	"name": "reading_progress_main_pipeline",
+	"properties": {
+		"activities": [
+			{
+				"name": "Reading Progress Notebook",
+				"description": "Processes Reading Progress data.",
+				"type": "SynapseNotebook",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebook": {
+						"referenceName": "Reading Progress Notebook",
+						"type": "NotebookReference"
+					},
+					"snapshot": true,
+					"executorSize": null,
+					"driverSize": null
+				}
+			},
+			{
+				"name": "Serve to SQL db",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Reading Progress Notebook",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "create_reading_prog_sql_db",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"stage": "2"
+					}
+				}
+			}
+		],
+		"parameters": {
+			"storageAccount": {
+				"type": "string",
+				"defaultValue": "stoeamithac01"
+			},
+			"sourceDirectory": {
+				"type": "string",
+				"defaultValue": "reading_progress"
+			}
+		},
+		"folder": {
+			"name": "Reading Progress Module"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-12-26T17:42:59Z"
+	},
+	"type": "Microsoft.Synapse/workspaces/pipelines"
+}

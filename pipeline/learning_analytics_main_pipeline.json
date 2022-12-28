@@ -1,0 +1,104 @@
+{
+	"name": "learning_analytics_main_pipeline",
+	"properties": {
+		"activities": [
+			{
+				"name": "Build LA Package Roster Tables",
+				"description": "This notebook uses Insights stage 2 data to create 3 tables: Student_pseudo, Enrollment_pseudo, and Student_lookup.",
+				"type": "SynapseNotebook",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebook": {
+						"referenceName": "LA_HEd_build_roster_tables",
+						"type": "NotebookReference"
+					},
+					"snapshot": true
+				}
+			},
+			{
+				"name": "Build LA Package Engagement Tables",
+				"description": "This notebook uses Insights and Graph stage 2 data to create 4 tables: Meetings, MeetingsAggregate, InsightsActivity, and Assignments.",
+				"type": "SynapseNotebook",
+				"dependsOn": [
+					{
+						"activity": "Build LA Package Roster Tables",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebook": {
+						"referenceName": "LA_HEd_build_engagement_tables",
+						"type": "NotebookReference"
+					},
+					"snapshot": true
+				}
+			},
+			{
+				"name": "Serve to SQL db",
+				"description": "Creates a SQL db from the enriched/curated learning analytics package data: sqls3_learning_analytics",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Build LA Package Engagement Tables",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "create_sql_db1",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"storageAccount": {
+							"value": "@pipeline().parameters.storageAccount",
+							"type": "Expression"
+						},
+						"sourceDirectory": {
+							"value": "@pipeline().parameters.sourceDirectory",
+							"type": "Expression"
+						},
+						"stage": "3"
+					}
+				}
+			}
+		],
+		"parameters": {
+			"storageAccount": {
+				"type": "string",
+				"defaultValue": "stoeamithac01"
+			},
+			"sourceDirectory": {
+				"type": "string",
+				"defaultValue": "learning_analytics"
+			}
+		},
+		"folder": {
+			"name": "Learning Analytics Package"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-12-07T15:56:08Z"
+	},
+	"type": "Microsoft.Synapse/workspaces/pipelines"
+}

@@ -1,0 +1,221 @@
+{
+	"name": "insights_main_pipeline",
+	"properties": {
+		"activities": [
+			{
+				"name": "ingest into stage2p and stage2np",
+				"type": "SynapseNotebook",
+				"dependsOn": [
+					{
+						"activity": "If pull_k12_test_data",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "If pull_hed_test_data",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebook": {
+						"referenceName": "Insights_module_ingestion",
+						"type": "NotebookReference"
+					},
+					"snapshot": true,
+					"sparkPool": {
+						"referenceName": "spark3p1sm",
+						"type": "BigDataPoolReference"
+					},
+					"executorSize": null,
+					"conf": {
+						"spark.dynamicAllocation.enabled": null,
+						"spark.dynamicAllocation.minExecutors": null,
+						"spark.dynamicAllocation.maxExecutors": null
+					},
+					"driverSize": null,
+					"numExecutors": null
+				}
+			},
+			{
+				"name": "If create_sql_db",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "ingest into stage2p and stage2np",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@pipeline().parameters.create_sql_db",
+						"type": "Expression"
+					},
+					"ifTrueActivities": [
+						{
+							"name": "create_sql_db",
+							"type": "ExecutePipeline",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "create_sql_db11",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true,
+								"parameters": {
+									"storageAccount": {
+										"value": "@pipeline().parameters.storageAccount",
+										"type": "Expression"
+									},
+									"sourceDirectory": {
+										"value": "@pipeline().parameters.sourceDirectory",
+										"type": "Expression"
+									},
+									"stage": "2"
+								}
+							}
+						}
+					]
+				}
+			},
+			{
+				"name": "If create_lake_db",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "ingest into stage2p and stage2np",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@pipeline().parameters.create_lake_db",
+						"type": "Expression"
+					},
+					"ifTrueActivities": [
+						{
+							"name": "create_lake_db",
+							"type": "ExecutePipeline",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "create_sql_db",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true
+							}
+						}
+					]
+				}
+			},
+			{
+				"name": "If pull_k12_test_data",
+				"description": "If pipeline parameter true, pulls K-12 test data from OEA GitHub repository.",
+				"type": "IfCondition",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@pipeline().parameters.pull_k12_test_data",
+						"type": "Expression"
+					},
+					"ifTrueActivities": [
+						{
+							"name": "Extract Insights K-12 test data from source",
+							"description": "Pulls Insights module K-12 test data on OEA GitHub Repository. Landed in stage1np.",
+							"type": "ExecutePipeline",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "insights_copy_k12_test_data",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true
+							}
+						}
+					]
+				}
+			},
+			{
+				"name": "If pull_hed_test_data",
+				"description": "If pipeline parameter true, pulls higher ed test data from OEA GitHub repository.",
+				"type": "IfCondition",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@pipeline().parameters.pull_hed_test_data",
+						"type": "Expression"
+					},
+					"ifTrueActivities": [
+						{
+							"name": "Extract Insights Higher Ed test data from source_copy1",
+							"description": "Pulls Insights module Higher Ed test data on OEA GitHub Repository. Landed in stage1np.",
+							"type": "ExecutePipeline",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "insights_copy_hed_test_data",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true
+							}
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"pull_k12_test_data": {
+				"type": "bool",
+				"defaultValue": true
+			},
+			"pull_hed_test_data": {
+				"type": "bool",
+				"defaultValue": false
+			},
+			"storageAccount": {
+				"type": "string",
+				"defaultValue": "stoeamithaz01"
+			},
+			"sourceDirectory": {
+				"type": "string",
+				"defaultValue": "M365"
+			},
+			"create_sql_db": {
+				"type": "bool",
+				"defaultValue": true
+			},
+			"create_lake_db": {
+				"type": "bool",
+				"defaultValue": true
+			}
+		},
+		"folder": {
+			"name": "Insights Module"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-12-28T18:24:45Z"
+	},
+	"type": "Microsoft.Synapse/workspaces/pipelines"
+}
